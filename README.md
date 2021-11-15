@@ -1,5 +1,5 @@
 Run with:
-   `python3 -m genetic.main`
+   `python3 -m genetic.main --dataset path/to/dataset.csv`
 
 Resume with:
     `python3 -m genetic.main --resume=outputs/generation_3'`

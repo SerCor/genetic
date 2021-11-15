@@ -11,7 +11,7 @@ def mutate(instance: IndividualAdapter) -> IndividualAdapter:
     flipped_bit = '1' if instance[bit_index] == '0' else '0'
     new_bits = instance[:bit_index] + flipped_bit + instance[bit_index+1:]
 
-    return IndividualAdapter.from_bits(new_bits, score=instance.score)
+    return IndividualAdapter.from_bits(new_bits, score=instance.score, dataset=instance.dataset)
 
 
 def uniform_crossover(
@@ -19,7 +19,7 @@ def uniform_crossover(
         instance2: IndividualAdapter) -> List[IndividualAdapter]:
     
     return [IndividualAdapter.from_bits(
-        ''.join([random.choice([bit1, bit2]) for bit1, bit2 in zip(instance1, instance2)]))]
+        ''.join([random.choice([bit1, bit2]) for bit1, bit2 in zip(instance1, instance2)]), dataset=instance1.dataset)]
 
 
 def single_point_crossover(instance1: IndividualAdapter, 
@@ -27,6 +27,6 @@ def single_point_crossover(instance1: IndividualAdapter,
     cross_point = random.randint(1, len(instance1) - 2)
 
     return (
-            IndividualAdapter.from_bits(instance1[:cross_point] + instance2[cross_point:]),
-            IndividualAdapter.from_bits(instance2[:cross_point] + instance1[cross_point:])
+            IndividualAdapter.from_bits(instance1[:cross_point] + instance2[cross_point:], dataset=instance1.dataset),
+            IndividualAdapter.from_bits(instance2[:cross_point] + instance1[cross_point:], dataset=instance1.dataset)
     )

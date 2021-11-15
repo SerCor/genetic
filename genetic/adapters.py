@@ -16,12 +16,13 @@ from .individual import Individual
 
 
 class IndividualAdapter:
-    def __init__(self, instance: Individual, score=None):
+    def __init__(self, instance: Individual, dataset, score=None):
         self.instance = instance
+        self.dataset = dataset
         self._score: Optional[float] = score
 
     @classmethod
-    def from_bits(cls, bits: str, score=None) -> 'IndividualAdapter':
+    def from_bits(cls, bits: str, dataset, score=None) -> 'IndividualAdapter':
        epsilon_bits, min_samples_bits = bits[:N_BITS_EPSILON], bits[N_BITS_EPSILON:]
 
        return cls(
@@ -29,18 +30,20 @@ class IndividualAdapter:
                 epsilon=bits2float(epsilon_bits, *RANGE_EPSILON),
                 min_samples=bits2int(min_samples_bits, 1),
             ),
-            score=score
+            score=score,
+            dataset=dataset
         )
     
     @classmethod
-    def random(cls) -> 'IndividualAdapter':
+    def random(cls, dataset) -> 'IndividualAdapter':
         low_epsilon, high_epsilon = RANGE_EPSILON
 
         return cls(
             instance=Individual(
                 epsilon=random.uniform(low_epsilon, high_epsilon),
                 min_samples=random.randint(1, 2 ** N_BITS_MIN_SAMPLES)
-            )
+            ),
+            dataset=dataset
         )
 
     @property
@@ -64,7 +67,7 @@ class IndividualAdapter:
     @property
     def score(self):
         if self._score is None:
-            self._score = compute_perfomance(min_samples=self.instance.min_samples,
+            self._score = compute_perfomance(dataset=self.dataset, min_samples=self.instance.min_samples,
                                 epsilon=self.instance.epsilon)
 
         return self._score
@@ -113,6 +116,7 @@ class IndividualAdapter:
         return (
             'IndividualAdapter('
             f'instance={self.instance!r},'
-            f'score={self._score}'
+            f'score={self._score!r},'
+            f'dataset={self.dataset!r}'
             ')'
         )

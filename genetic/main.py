@@ -47,7 +47,10 @@ def persist_current_state(state: State) -> None:
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-r', '--resume', type=str)
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-r', '--resume', type=str, help='output file from resume')
+    group.add_argument('-d', '--dataset', type=str, help='path to dataset')
+
     return parser.parse_args()
 
 
@@ -60,7 +63,8 @@ def main():
             population_size=POPULATION_SIZE,
             max_epoch=MAX_EPOCHS,
             mutation_rate=RATE_MUTATION,
-            mutation_rate_increment=INCREMENT_RATE_MUTATION
+            mutation_rate_increment=INCREMENT_RATE_MUTATION,
+            dataset=args.dataset
         )
     else:
         state = read_state(args.resume)

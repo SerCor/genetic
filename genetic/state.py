@@ -16,15 +16,17 @@ class State:
     max_epoch: int
     mutation_rate: float
     mutation_rate_increment: float
+    dataset: str
 
     @classmethod
-    def initial(cls, population_size: int, max_epoch: int, mutation_rate: float, mutation_rate_increment: float) -> 'State':
+    def initial(cls, dataset: str, population_size: int, max_epoch: int, mutation_rate: float, mutation_rate_increment: float) -> 'State':
         return cls(
             epoch=0,
-            population=[IndividualAdapter.random() for _ in range(population_size)],
+            population=[IndividualAdapter.random(dataset=dataset) for _ in range(population_size)],
             max_epoch=max_epoch,
             mutation_rate=mutation_rate,
-            mutation_rate_increment=mutation_rate_increment
+            mutation_rate_increment=mutation_rate_increment,
+            dataset=dataset
         )
     
     def evolution(self, next_generation: Population) -> None:
@@ -43,7 +45,8 @@ class State:
             f'population={self.population!r},'
             f'max_epoch={self.max_epoch!r},'
             f'mutation_rate={self.mutation_rate!r},'
-            f'mutation_rate_increment={self.mutation_rate_increment!r}'
+            f'mutation_rate_increment={self.mutation_rate_increment!r},'
+            f'dataset={self.dataset!r}'
             ')'
         )
 
