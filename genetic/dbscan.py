@@ -22,7 +22,7 @@ def compute_perfomance(dataset: str, min_samples: int, epsilon: float) -> float:
     return (
         Fraction('2/5') * normalize(-1, 1, metrics.silhouette_score(X, labels)) # Best value 1
         + Fraction('2/5') * normalize(0, 1, 1 - metrics.davies_bouldin_score(X, labels)) # Best value 0 
-        + Fraction('1/5') * 1 if n_labels > 3 else 0
+        + Fraction('1/5') * 1 if n_labels >= 3 else 0
     )
 
 
