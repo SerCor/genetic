@@ -6,7 +6,7 @@ from typing import List
 
 from .adapters import IndividualAdapter
 from .state import State, persist_state, read_state
-from .operators import uniform_crossover, mutate, single_point_crossover
+from .operators import uniform_crossover, mutate, single_point_crossover, two_point_crossover
 from .selection import generate_couples, get_elites
 from .settings import (
     RATE_MUTATION, SIZE_ELITE,
@@ -19,7 +19,7 @@ from .utils import preprend
 def crossover_stage(state: State) -> List[IndividualAdapter]:    
     # Generate couples
     required_couples = (POPULATION_SIZE - SIZE_ELITE) // 3
-    operators = [uniform_crossover, single_point_crossover]
+    operators = [uniform_crossover, two_point_crossover]
     couples = generate_couples(state.population, required_couples)
 
     # Select the elites
@@ -70,6 +70,7 @@ def main():
         state = read_state(args.resume)
 
     while not state.is_finished:
+        print(f'Generation #{state.epoch}')
         next_generation = crossover_stage(state)
         persist_current_state(state)
         state.evolution(next_generation)

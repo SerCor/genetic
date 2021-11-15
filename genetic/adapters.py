@@ -23,16 +23,21 @@ class IndividualAdapter:
 
     @classmethod
     def from_bits(cls, bits: str, dataset, score=None) -> 'IndividualAdapter':
-       epsilon_bits, min_samples_bits = bits[:N_BITS_EPSILON], bits[N_BITS_EPSILON:]
+        len_input_bits = len(bits)
+        expected_len = N_BITS_EPSILON + N_BITS_MIN_SAMPLES
+        if len_input_bits != expected_len:
+            raise ValueError(f'the assgiend bits must to be of length {expected_len} but is {len_input_bits}')
 
-       return cls(
-            instance=Individual(
-                epsilon=bits2float(epsilon_bits, *RANGE_EPSILON),
-                min_samples=bits2int(min_samples_bits, 1),
-            ),
-            score=score,
-            dataset=dataset
-        )
+        epsilon_bits, min_samples_bits = bits[:N_BITS_EPSILON], bits[N_BITS_EPSILON:]
+
+        return cls(
+                instance=Individual(
+                    epsilon=bits2float(epsilon_bits, *RANGE_EPSILON),
+                    min_samples=bits2int(min_samples_bits, 1),
+                ),
+                score=score,
+                dataset=dataset
+            )
     
     @classmethod
     def random(cls, dataset) -> 'IndividualAdapter':
@@ -74,7 +79,7 @@ class IndividualAdapter:
 
     def set_bits(self, bits: str) -> None:
         len_input_bits = len(bits)
-        expected_len = len(self.min_samples + self.epsilon)
+        expected_len = N_BITS_EPSILON + N_BITS_MIN_SAMPLES
         if len_input_bits != expected_len:
             raise ValueError(f'the assgiend bits must to be of length {expected_len} but is {len_input_bits}')
         

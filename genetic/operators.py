@@ -30,3 +30,14 @@ def single_point_crossover(instance1: IndividualAdapter,
             IndividualAdapter.from_bits(instance1[:cross_point] + instance2[cross_point:], dataset=instance1.dataset),
             IndividualAdapter.from_bits(instance2[:cross_point] + instance1[cross_point:], dataset=instance1.dataset)
     )
+
+
+def two_point_crossover(instance1: IndividualAdapter, 
+        instance2: IndividualAdapter) -> Tuple[IndividualAdapter, IndividualAdapter]:
+    p1, p2 = sorted(random.sample(range(1, len(instance1) - 1), 2))
+    m1, m2 = instance1.get_bits(), instance2.get_bits()
+
+    return (
+        IndividualAdapter.from_bits(m1[:p1] + m2[p1:p2] + m1[p2:], dataset=instance1.dataset),
+        IndividualAdapter.from_bits(m2[:p1] + m1[p1:p2] + m2[p2:], dataset=instance1.dataset)
+    )
