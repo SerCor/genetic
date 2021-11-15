@@ -11,7 +11,11 @@ Couple = Tuple[IndividualAdapter, IndividualAdapter]
 
 
 def generate_round(population: Population, n: int) -> Population: 
-    return random.sample(population, n)
+    round_ = random.sample(population, n)
+    for individual in round_:
+        individual.score # Force to comput the score
+    
+    return round_
 
 
 def pick_one(population: Population) -> IndividualAdapter:
@@ -29,4 +33,4 @@ def generate_couples(origin: Population, total_pairs: int) -> List[Couple]:
 
 
 def get_elites(population: Population, n: int) -> Population:
-    return sorted(population)[:-n]
+    return sorted(population)[-n:]
