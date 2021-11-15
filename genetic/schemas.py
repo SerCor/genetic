@@ -26,14 +26,14 @@ def compute_schema_statistics(population: Population):
 
 
 def has_truncated_schema(population: Population, truncated_gen_threshold=0.90,
-                         truncated_population_threshold=.90) -> bool:
+                         truncated_genes_threshold=.90) -> bool:
     schema_statistics = compute_schema_statistics(population)
-    len_population = len(population[0])
-    truncated_counter = 0
+    len_chromosome = len(population[0])
+    truncated_genes = 0
 
     for gen_statistics in schema_statistics:
         if (gen_statistics['0'] >= truncated_gen_threshold
              or gen_statistics['0'] <= 1 - truncated_gen_threshold):
-            truncated_counter += 1
+            truncated_genes += 1
 
-    return (truncated_counter / len_population) >= truncated_population_threshold 
+    return (truncated_genes / len_chromosome) >= truncated_genes_threshold 
