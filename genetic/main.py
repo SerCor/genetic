@@ -5,8 +5,7 @@ import random
 from typing import List
 
 from .adapters import IndividualAdapter
-from .dbscan import compute_perfomance
-from .state import State, persist_state
+from .state import State, persist_state, read_state
 from .operators import uniform_crossover, mutate, single_point_crossover
 from .selection import generate_couples, get_elites
 from .settings import (
@@ -18,16 +17,14 @@ from .utils import preprend
 
 
 def crossover_stage(state: State) -> List[IndividualAdapter]:    
-    # Select the elites
-    breakpoint()
-    elites = get_elites(state.population, SIZE_ELITE) 
-
-    # Generate rest of the generation
+    # Generate couples
     required_couples = (POPULATION_SIZE - SIZE_ELITE) // 3
     operators = [uniform_crossover, single_point_crossover]
     couples = generate_couples(state.population, required_couples)
 
-    return list(chain.from_iterable([o(*c) for c in couples for o in operators]))
+    # Select the elites
+    elites = get_elites(state.population, SIZE_ELITE) 
+    return [*elites, *chain.from_iterable([o(*c) for c in couples for o in operators])]
  
 
 def mutate_stage(state: State) -> State:
@@ -46,13 +43,6 @@ def mutate_stage(state: State) -> State:
 def persist_current_state(state: State) -> None:
     out_filename = f'{OUTDIR}/generation_{state.epoch}'
     persist_state(out_filename, state)
-
-
-def precompute_scores(state: State) -> None:
-    for adapter in state.population:
-        fitness = compute_perfomance(min_samples=adapter.instance.min_samples,
-                                     epsilon=adapter.instance.epsilon)
-        adapter.score = fitness
 
 
 def get_args():
@@ -76,9 +66,8 @@ def main():
         state = read_state(args.resume)
 
     while not state.is_finished:
-        precompute_scores(state)
-        persist_current_state(state)
         next_generation = crossover_stage(state)
+        persist_current_state(state)
         state.evolution(next_generation)
         mutation = mutate_stage(state)
 

@@ -7,6 +7,7 @@ from .convert import (
     bits2float, bits2int,
     float2bits, int2bits
 )
+from .dbscan import compute_perfomance
 from .settings import (
     N_BITS_EPSILON, N_BITS_MIN_SAMPLES,
     RANGE_EPSILON,
@@ -17,7 +18,7 @@ from .individual import Individual
 class IndividualAdapter:
     def __init__(self, instance: Individual, score=None):
         self.instance = instance
-        self.score: Optional[float] = score
+        self._score: Optional[float] = score
 
     @classmethod
     def from_bits(cls, bits: str, score=None) -> 'IndividualAdapter':
@@ -60,6 +61,14 @@ class IndividualAdapter:
     def min_samples(self, min_samples: str) -> None:
         self.instance.min_samples = bits2int(min_samples, 1)
 
+    @property
+    def score(self):
+        if self._score is None:
+            self._score = compute_perfomance(min_samples=self.instance.min_samples,
+                                epsilon=self.instance.epsilon)
+
+        return self._score
+
     def set_bits(self, bits: str) -> None:
         len_input_bits = len(bits)
         expected_len = len(self.min_samples + self.epsilon)
@@ -86,8 +95,8 @@ class IndividualAdapter:
         return len(self._instance_to_bits())
 
     def __lt__(self, other: 'IndividualAdapter') -> bool:
-        s1 = self.score or 0
-        s2 = other.score or 0
+        s1 = self._score or 0 # Dont force to evaluate
+        s2 = other._score or 0 # Dont force to evaluate
 
         return s1 < s2
     
@@ -104,6 +113,6 @@ class IndividualAdapter:
         return (
             'IndividualAdapter('
             f'instance={self.instance!r},'
-            f'score={self.score}'
+            f'score={self._score}'
             ')'
         )
